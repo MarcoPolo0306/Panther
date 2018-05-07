@@ -10,6 +10,7 @@ local installFiles = {
 	"Panther/System/Settings.sys",
 	"Panther/System/Update.sys",
 	"Panther/SystemCache/version.syc",
+	"Panther/SystemCache/versionnum.syc",
 	"Panther/UserData/color.urd",
 	"Panther/UserData/password.urd",
 	"Panther/UserData/monscale.urd",
