@@ -10,6 +10,7 @@ local installFiles = {
 	{"Panther/System/Update.sys",false},
 	{"Panther/System/Boot.sys",false},
 	{"Panther/SystemCache/version.syc",false},
+	{"Panther/SystemCache/versionnum.syc",true}, -- DO NOT CHANGE true TO false. IT WILL CAISE INFINATE INSTALL LOOP
 	{"Panther/UserData/color.urd",false},
 	{"Panther/UserData/password.urd",false},
 	{"Panther/System/API/Menu",false},

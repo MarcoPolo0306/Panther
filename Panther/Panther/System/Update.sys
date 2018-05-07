@@ -4,7 +4,7 @@ local function CenterText(text,y)
 	write(text)
 end
 local function gitFile(path,save)
-    local download = http.get("https://raw.githubusercontent.com/MarcoPolo0306/Panther/dev/Panther/"..path)
+    local download = http.get("https://raw.githubusercontent.com/MarcoPolo0306/Panther/dev/"..path)
     local data = download.readAll()
     download.close()
  
@@ -21,7 +21,7 @@ end
 term.clear()
 local x,y = term.getSize()
 CenterText("Checking for updates",(y/2)+2)
-gitFile("Panther/SystemCache/versionnum.syc",".ver")
+gitFile("Panther/Panther/SystemCache/versionnum.syc",".ver")
 local verF = fs.open(".ver","r")
 local verA = verF.readAll()
 local ver = tonumber(verA)
