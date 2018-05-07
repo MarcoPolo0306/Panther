@@ -30,6 +30,7 @@ local installFiles = {
 	"Panther/System/Images/StartupLogoMS/LogoAnimation5.img",
 	"Panther/System/Images/StartupLogoMS/LogoAnimation6.img",
 	"Panther/System/Images/StartupLogoMS/LogoAnimation7.img",
+	"Panther/System/InstalledPrograms/Browser",
 	"startup"
 }
 
