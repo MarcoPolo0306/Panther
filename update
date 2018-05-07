@@ -29,7 +29,7 @@ local installFiles = {
 	{"Panther/System/Images/StartupLogoMS/LogoAnimation5.img",false},
 	{"Panther/System/Images/StartupLogoMS/LogoAnimation6.img",false},
 	{"Panther/System/Images/StartupLogoMS/LogoAnimation7.img",false},
-	{"Panther/System/InstalledPrograms/Browser",true},
+	{"Panther/InstalledPrograms/Browser",true},
 	{"startup",false}
 }
 
