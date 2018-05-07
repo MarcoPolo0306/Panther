@@ -65,7 +65,6 @@ local function gitFile(path,save,updateBar)
 	term.clearLine()
 	term.setCursorPos(1,y)
 	term.clearLine()
-	print(path)
 	
     local download = http.get("https://raw.githubusercontent.com/MarcoPolo0306/Panther/dev/Panther/"..path)
     local data = download.readAll()
