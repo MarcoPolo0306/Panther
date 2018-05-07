@@ -3,9 +3,41 @@ local function CenterText(text,y)
 	term.setCursorPos(x/2-string.len(text)/2,y)
 	write(text)
 end
+local function gitFile(path,save)
+	
+    local download = http.get("https://raw.githubusercontent.com/MarcoPolo0306/Panther/dev/Panther/"..path)
+    local data = download.readAll()
+    download.close()
+ 
+	if save then
+		local file = fs.open(save,"w")
+		file.write(data)
+		file.close()
+	else
+		local file = fs.open(path,"w")
+		file.write(data)
+		file.close()
+	end
+end
 term.clear()
 local x,y = term.getSize()
 CenterText("Checking for updates",(y/2)+2)
+gitFile("System/Panther/SystemCache/versionnum.syc",".ver")
+local verF = fs.open(".ver","r")
+local verA = verF.readAll()
+local ver = tonumber(verA)
+verF.close()
+
+local verF = fs.open("System/Panther/SystemCache/versionnum.syc","r")
+local verA = verF.readAll()
+local verC = tonumber(verA)
+verF.close()
+
+if ver > verC then
+	gitFile("update",".update")
+	shell.run(".update")
+end
+
 paintutils.drawLine(x/2-11,y/2,x/2+10,y/2,colors.gray)
 sleep(0.1)
 --do thing

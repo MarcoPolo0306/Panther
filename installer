@@ -130,6 +130,3 @@ CenterText("Press any key to reboot",y/2+1)
 term.setTextColor(colors.gray)
 os.pullEvent()
 os.reboot()
-
-
-

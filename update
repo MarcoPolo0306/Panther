@@ -1,0 +1,89 @@
+local x,y = term.getSize()
+term.setBackgroundColor(colors.black)
+term.clear()
+local installFiles = {
+	{"Panther/System/Boot.sys",false},
+	{"Panther/System/Logon.sys",false},
+	{"Panther/System/Programs.sys",false},
+	{"Panther/System/Desktop.sys",false},
+	{"Panther/System/Settings.sys",false},
+	{"Panther/System/Update.sys",false},
+	{"Panther/System/Boot.sys",false},
+	{"Panther/SystemCache/version.syc",false},
+	{"Panther/UserData/color.urd",false},
+	{"Panther/UserData/password.urd",false},
+	{"Panther/System/API/Menu",false},
+	{"Panther/System/Images/Backgrounds/LogonBackground.img",false},
+	{"Panther/System/Images/StartupLogo/LogoAnimation1.img",false},
+	{"Panther/System/Images/StartupLogo/LogoAnimation2.img",false},
+	{"Panther/System/Images/StartupLogo/LogoAnimation3.img",false},
+	{"Panther/System/Images/StartupLogo/LogoAnimation4.img",false},
+	{"Panther/System/Images/StartupLogo/LogoAnimation5.img",false},
+	{"Panther/System/Images/StartupLogo/LogoAnimation6.img",false},
+	{"Panther/System/Images/StartupLogo/LogoAnimation7.img",false},
+	{"Panther/System/Images/StartupLogoMS/LogoAnimation1.img",false},
+	{"Panther/System/Images/StartupLogoMS/LogoAnimation2.img",false},
+	{"Panther/System/Images/StartupLogoMS/LogoAnimation3.img",false},
+	{"Panther/System/Images/StartupLogoMS/LogoAnimation4.img",false},
+	{"Panther/System/Images/StartupLogoMS/LogoAnimation5.img",false},
+	{"Panther/System/Images/StartupLogoMS/LogoAnimation6.img",false},
+	{"Panther/System/Images/StartupLogoMS/LogoAnimation7.img",false},
+	--{"Panther/System/InstalledPrograms/Browser",true},
+	{"startup",false}
+}
+
+local function CenterText(text,y)
+	local x,ny = term.getSize()
+	term.setCursorPos(x/2-string.len(text)/2,y)
+	write(text)
+end
+
+local current = 1
+
+local function drawBar(startX,endX,fileAmount,currentFile)
+	paintutils.drawLine(startX, y/2, endX, y/2, colors.gray)
+	term.setBackgroundColor(colors.cyan)
+	term.setCursorPos(startX, y/2)
+	term.write(string.rep(" ",currentFile/fileAmount*(endX-startX)))
+end
+
+local function gitFile(path,save,updateBar)
+	
+    local download = http.get("https://raw.githubusercontent.com/MarcoPolo0306/Panther/dev/Panther/"..path)
+    local data = download.readAll()
+    download.close()
+ 
+	if save then
+		local file = fs.open(save,"w")
+		file.write(data)
+		file.close()
+	else
+		local file = fs.open(path,"w")
+		file.write(data)
+		file.close()
+	end
+	if updateBar == nil then
+		drawBar(5,x-5,27,current)
+		
+	end
+end
+
+CenterText("Downoading update...",y/2+2)
+
+for _, install in ipairs(installFiles) do
+	if not fs.exists(install[1]) or install[2] == true then
+		gitFile(install[1])
+	end
+	current = current+ 1
+end
+sleep(0.5)
+term.setBackgroundColor(colors.black)
+CenterText("      Complete!      ",y/2+2)
+CenterText("Press any key to reboot",y/2+3)
+
+term.setTextColor(colors.gray)
+os.pullEvent()
+os.reboot()
+
+
+
