@@ -1,0 +1,5 @@
+term.setBackgroundColor(colors.black)
+term.clear()
+term.setCursorPos(1,1)
+print("\nType 'exit' to go back.\n")
+shell.run("rom/programs/shell")
