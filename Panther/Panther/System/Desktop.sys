@@ -1,158 +1,162 @@
-function main()
 local xs, ys = term.getSize()
-local colorF = fs.open("Panther/UserData/color.urd","r") 
-color = colorF.readAll()
-colorF.close()
-local currentPx = 0
-local currentPy = 0
-local desktopIcons = {}
-
-function drawButton(x,y,padding,height,text)
-	term.setCursorPos(x,y)
-	paintutils.drawFilledBox(x,y,x+padding+string.len(text),y+height-1,colors.gray)
-	term.setCursorPos(x+padding,y+math.floor(height/2))
-	term.setTextColor(colors.lightGray)
-	write(text)
-end
-
-function drawSidebar()
-	paintutils.drawFilledBox(1,1,14,ys,tonumber(color))
-	term.setCursorPos(2,2)
-	term.setTextColor(colors.gray)
-	write("Menu")
-	drawButton(2,4,2,3,"Settings ")
-	drawButton(2,8,2,3,"Programs ")
-	drawButton(2,ys-3,2,3," Reboot  ")
-	drawButton(2,ys-7,2,3,"Shutdown ")
-end
-
-local function drawIcon(name,image)
-	term.setCursorPos(16+currentPx,2+currentPy)
-	if not image then
-		term.setBackgroundColor(colors.lightBlue)
-		term.setTextColor(colors.gray)
-		write("\127\127\127\127\127\127\127\127")
-		term.setCursorPos(16+currentPx,3+currentPy)
-		write("\127\127\127\127\127\127\127\127")
-		term.setCursorPos(16+currentPx,4+currentPy)
-		write("\127\127\127\127\127\127\127\127")
-		term.setCursorPos(16+currentPx,5+currentPy)
-		write("\127\127\127\127\127\127\127\127")
-	else
-		
-	end
+local function main()
 	
-	table.insert(desktopIcons,16+currentPx)
-	table.insert(desktopIcons,2+currentPy)
-	table.insert(desktopIcons,name)
-	
-	if not name then name = "Unnamed" end
-	term.setCursorPos(16+currentPx+(string.len(name)/2)/2,6+currentPy)
-	write(tostring(name))
-	currentPx = currentPx + 9
-end
+	local colorF = fs.open("Panther/UserData/color.urd","r") 
+	color = colorF.readAll()
+	colorF.close()
+	local currentPx = 0
+	local currentPy = 0
+	local desktopIcons = {}
 
-if not fs.exists("Panther/SystemCache/UserLogonInfo.inf") then
-	error("Please login from the logon screen.")
-end
-
-function draw()
-	currentPx = 0
-	currentPy = 0
-	term.setBackgroundColor(colors.lightBlue)
-	term.clear()
-	drawSidebar()
-	programsFound = 0
-	local programs = fs.list("Panther/InstalledPrograms/")
-	for i, name in pairs(programs) do
-		programsFound = i
-		drawIcon(name)
+	local function drawButton(x,y,padding,height,text)
+		term.setCursorPos(x,y)
+		paintutils.drawFilledBox(x,y,x+padding+string.len(text),y+height-1,colors.gray)
+		term.setCursorPos(x+padding,y+math.floor(height/2))
+		term.setTextColor(colors.lightGray)
+		write(text)
 	end
-	if programsFound == 0 then
-		term.setCursorPos(17,2)
-		term.setBackgroundColor(colors.lightBlue)
+
+	local function drawSidebar()
+		paintutils.drawFilledBox(1,1,14,ys,tonumber(color))
+		term.setCursorPos(2,2)
 		term.setTextColor(colors.gray)
-		write("No programs have been installed.")
+		write("Menu")
+		drawButton(2,4,2,3,"Settings ")
+		drawButton(2,8,2,3,"Programs ")
+		drawButton(2,ys-3,2,3," Reboot  ")
+		drawButton(2,ys-7,2,3,"Shutdown ")
 	end
-end
 
+	local function drawIcon(name,image)
+		term.setCursorPos(16+currentPx,2+currentPy)
+		if not image then
+			term.setBackgroundColor(colors.lightBlue)
+			term.setTextColor(colors.gray)
+			write("\127\127\127\127\127\127\127\127")
+			term.setCursorPos(16+currentPx,3+currentPy)
+			write("\127\127\127\127\127\127\127\127")
+			term.setCursorPos(16+currentPx,4+currentPy)
+			write("\127\127\127\127\127\127\127\127")
+			term.setCursorPos(16+currentPx,5+currentPy)
+			write("\127\127\127\127\127\127\127\127")
+		else
 
-draw()
-
-local doRedraw = true
-
-while true do
-	if doRedraw then
-		draw()
-	else
-		doRedraw = false
-	end
-	local e = {os.pullEvent()}
-	if e[1] == "mouse_click" then
-		if e[2] == 1 then
-			if e[3] >= 2 and e[3] <= 3+string.len("Shutdown  ") and e[4] >= ys-7 and e[4] <= ys-5 then
-				os.shutdown()
-			elseif e[3] >= 2 and e[3] <= 3+string.len(" Reboot   ") and e[4] >= ys-3 and e[4] <= ys-1 then
-				os.reboot()
-			elseif e[3] >= 2 and e[3] <= 3+string.len("Settings ") and e[4] >= 4 and e[4] <= 6 then
-				doRedraw = true
-				shell.run("Panther/System/Settings.sys")
-			elseif e[3] >= 2 and e[3] <= 3+string.len("Programs ") and e[4] >= 8 and e[4] <= 10 then
-				doRedraw = true
-				shell.run("Panther/System/Programs.sys")
-			--
-			end
-			
-			if desktopIcons[1] then
-				if e[3] >= desktopIcons[1] and e[3] <= desktopIcons[1]+8 and e[4] >= desktopIcons[2] and e[4] <= desktopIcons[2]+6 then
-					doRedraw = true
-					shell.run("Panther/InstalledPrograms/"..desktopIcons[6])
-				end
-			end
-			if desktopIcons[4] then
-				if e[3] >= desktopIcons[4] and e[3] <= desktopIcons[4]+8 and e[4] >= desktopIcons[5] and e[4] <= desktopIcons[5]+6 then
-					doRedraw = true
-					shell.run("Panther/InstalledPrograms/"..desktopIcons[6])
-				end
-			end
-			if desktopIcons[7] then
-				if e[3] >= desktopIcons[7] and e[3] <= desktopIcons[7]+8 and e[4] >= desktopIcons[8] and e[4] <= desktopIcons[8]+6 then
-					doRedraw = true
-					shell.run("Panther/InstalledPrograms/"..desktopIcons[9])
-				end
-			end
-			if desktopIcons[10] then
-				if e[3] >= desktopIcons[11] and e[3] <= desktopIcons[11]+8 and e[4] >= desktopIcons[12] and e[4] <= desktopIcons[12]+6 then
-					doRedraw = true
-					shell.run("Panther/InstalledPrograms/"..desktopIcons[13])
-				end
-			end
-			if desktopIcons[14] then
-				if e[3] >= desktopIcons[14] and e[3] <= desktopIcons[14]+8 and e[4] >= desktopIcons[15] and e[4] <= desktopIcons[15]+6 then
-					doRedraw = true
-					shell.run("Panther/InstalledPrograms/"..desktopIcons[16])
-				end
-			end
 		end
-	elseif e[1] == "key" then
-		if e[2] == keys.r then
+
+		table.insert(desktopIcons,16+currentPx)
+		table.insert(desktopIcons,2+currentPy)
+		table.insert(desktopIcons,name)
+
+		if not name then name = "Unnamed" end
+		term.setCursorPos(16+currentPx+(string.len(name)/2)/2,6+currentPy)
+		write(tostring(name))
+		currentPx = currentPx + 9
+	end
+
+	if not fs.exists("Panther/SystemCache/UserLogonInfo.inf") then
+		error("Please login from the logon screen.")
+	end
+
+	function draw()
+		currentPx = 0
+		currentPy = 0
+		term.setBackgroundColor(colors.lightBlue)
+		term.clear()
+		drawSidebar()
+		programsFound = 0
+		local programs = fs.list("Panther/InstalledPrograms/")
+		for i, name in pairs(programs) do
+			programsFound = i
+			drawIcon(name)
+		end
+		if programsFound == 0 then
+			term.setCursorPos(17,2)
+			term.setBackgroundColor(colors.lightBlue)
+			term.setTextColor(colors.gray)
+			write("No programs have been installed.")
+		end
+	end
+
+	local doRedraw = true
+
+	while true do
+		if doRedraw then
+			draw()
+			doRedraw = false
+		end
+		local e = {os.pullEvent()}
+		if e[1] == "mouse_click" then
+			if e[2] == 1 then
+				if e[3] >= 2 and e[3] <= 3+string.len("Shutdown  ") and e[4] >= ys-7 and e[4] <= ys-5 then
+					os.shutdown()
+				elseif e[3] >= 2 and e[3] <= 3+string.len(" Reboot   ") and e[4] >= ys-3 and e[4] <= ys-1 then
+					os.reboot()
+				elseif e[3] >= 2 and e[3] <= 3+string.len("Settings ") and e[4] >= 4 and e[4] <= 6 then
+					doRedraw = true
+					shell.run("Panther/System/Settings.sys")
+				elseif e[3] >= 2 and e[3] <= 3+string.len("Programs ") and e[4] >= 8 and e[4] <= 10 then
+					doRedraw = true
+					shell.run("Panther/System/Programs.sys")
+				end
+
+				if desktopIcons[1] then
+					if e[3] >= desktopIcons[1] and e[3] <= desktopIcons[1]+8 and e[4] >= desktopIcons[2] and e[4] <= desktopIcons[2]+6 then
+						doRedraw = true
+						shell.run("Panther/InstalledPrograms/"..desktopIcons[6])
+					end
+				end
+				if desktopIcons[4] then
+					if e[3] >= desktopIcons[4] and e[3] <= desktopIcons[4]+8 and e[4] >= desktopIcons[5] and e[4] <= desktopIcons[5]+6 then
+						doRedraw = true
+						shell.run("Panther/InstalledPrograms/"..desktopIcons[6])
+					end
+				end
+				if desktopIcons[7] then
+					if e[3] >= desktopIcons[7] and e[3] <= desktopIcons[7]+8 and e[4] >= desktopIcons[8] and e[4] <= desktopIcons[8]+6 then
+						doRedraw = true
+						shell.run("Panther/InstalledPrograms/"..desktopIcons[9])
+					end
+				end
+				if desktopIcons[10] then
+					if e[3] >= desktopIcons[11] and e[3] <= desktopIcons[11]+8 and e[4] >= desktopIcons[12] and e[4] <= desktopIcons[12]+6 then
+						doRedraw = true
+						shell.run("Panther/InstalledPrograms/"..desktopIcons[13])
+					end
+				end
+				if desktopIcons[14] then
+					if e[3] >= desktopIcons[14] and e[3] <= desktopIcons[14]+8 and e[4] >= desktopIcons[15] and e[4] <= desktopIcons[15]+6 then
+						doRedraw = true
+						shell.run("Panther/InstalledPrograms/"..desktopIcons[16])
+					end
+				end
+			end
+		elseif e[1] == "key" then
+			if e[2] == keys.r then
+				doRedraw = true
+			end
+		elseif e[1] == "term_resize" then
+			xs, ys = term.getSize()
 			doRedraw = true
---			shell.run("Panther/System/Desktop.sys")
 		end
+	end
+	
+end
+
+local function bottomLoadBar(time,y)
+	term.setCursorPos(1,y or ys)
+	for x = 1, xs do
+		term.write("=")
+		sleep((time or 10)/xs)
 	end
 end
 
-
-end
 local ok, err = pcall(main)
 if not ok then
 	term.setBackgroundColor(colors.red)
 	term.setTextColor(colors.white)
 	term.clear()
-	local nx,ys = term.getSize()
 	local function CenterText(text,y)
-		local x,ny = term.getSize()
-		term.setCursorPos(x/2-string.len(text)/2,y)
+		term.setCursorPos((xs/2)-(#text)/2, y)
 		write(text)
 	end
 	term.setCursorPos(1,1)
@@ -162,6 +166,7 @@ if not ok then
 	term.setBackgroundColor(colors.red)
 	CenterText("A fatal error occured.",ys/2)
 	CenterText(err,ys/2+1)
-	sleep(10)
+	CenterText("Rebooting...",ys-1)
+	bottomLoadBar(10,ys)
 	os.reboot()
 end
