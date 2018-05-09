@@ -9,13 +9,16 @@ local installFiles = {
 	"Panther/System/Desktop.sys",
 	"Panther/System/Settings.sys",
 	"Panther/System/Update.sys",
-	"Panther/SystemCache/version.syc",
-	"Panther/SystemCache/versionnum.syc",
+	"Panther/SystemData/version.syc",
+	"Panther/SystemData/versionnum.syc",
 	"Panther/UserData/color.urd",
 	"Panther/UserData/password.urd",
 	"Panther/UserData/monscale.urd",
+	"Panther/UserData/autoupdate.urd",
+	"Panther/UserData/startupani.urd",
 	"Panther/System/API/Menu",
 	"Panther/System/Images/Backgrounds/LogonBackground.img",
+	"Panther/System/Images/Backgrounds/Background.img",
 	"Panther/System/Images/StartupLogo/LogoAnimation1.img",
 	"Panther/System/Images/StartupLogo/LogoAnimation2.img",
 	"Panther/System/Images/StartupLogo/LogoAnimation3.img",
@@ -31,7 +34,6 @@ local installFiles = {
 	"Panther/System/Images/StartupLogoMS/LogoAnimation6.img",
 	"Panther/System/Images/StartupLogoMS/LogoAnimation7.img",
 	"Panther/InstalledPrograms/Browser",
-	"Panther/InstalledPrograms/Shell",
 	"startup"
 }
 
@@ -66,6 +68,7 @@ local function gitFile(path,save,updateBar)
 	term.clearLine()
 	term.setCursorPos(1,y)
 	term.clearLine()
+	print(path)
 	
     local download = http.get("https://raw.githubusercontent.com/MarcoPolo0306/Panther/dev/Panther/"..path)
     local data = download.readAll()

@@ -1,45 +1,58 @@
-local function CenterText(text,y)
-	local x,ny = term.getSize()
-	term.setCursorPos(x/2-string.len(text)/2,y)
-	write(text)
+local autoUpdateF = fs.open("Panther/UserData/autoupdate.urd","r")
+local autoUpdateA = autoUpdateF.readAll()
+if autoUpdateA == "true" then
+	autoUpdate = true
+else
+	autoUpdate = false
 end
-local function gitFile(path,save)
-    local download = http.get("https://raw.githubusercontent.com/MarcoPolo0306/Panther/dev/"..path)
-    local data = download.readAll()
-    download.close()
- 
-	if save then
-		local file = fs.open(save,"w")
-		file.write(data)
-		file.close()
-	else
-		local file = fs.open(path,"w")
-		file.write(data)
-		file.close()
+autoUpdateF.close()
+
+if autoUpdate == true then
+	local function CenterText(text,y)
+		local x,ny = term.getSize()
+		term.setCursorPos(x/2-string.len(text)/2,y)
+		write(text)
 	end
+	local function gitFile(path,save)
+		local download = http.get("https://raw.githubusercontent.com/MarcoPolo0306/Panther/dev/"..path)
+		local data = download.readAll()
+		download.close()
+	 
+		if save then
+			local file = fs.open(save,"w")
+			file.write(data)
+			file.close()
+		else
+			local file = fs.open(path,"w")
+			file.write(data)
+			file.close()
+		end
+	end
+	local x,y = term.getSize()
+	term.clear()
+
+
+
+	CenterText("Checking for updates",(y/2)+2)
+	paintutils.drawLine(x/2-11,y/2,x/2+10,y/2,colors.gray)
+	sleep(0.1)
+	gitFile("Panther/Panther/SystemCache/versionnum.syc",".ver")
+	local verF = fs.open(".ver","r")
+	local verA = verF.readAll()
+	local ver = tonumber(verA)
+	verF.close()
+
+	local verF = fs.open("Panther/SystemData/versionnum.syc","r")
+	local verA = verF.readAll()
+	local verC = tonumber(verA)
+	verF.close()
+
+	if ver > verC then
+		gitFile("update",".update")
+		shell.run(".update")
+	end
+	--do thing
+	paintutils.drawLine(x/2-11,y/2,x/2+10,y/2,colors.lightBlue)
+	sleep(0.1)
 end
-term.clear()
-local x,y = term.getSize()
-CenterText("Checking for updates",(y/2)+2)
-gitFile("Panther/Panther/SystemCache/versionnum.syc",".ver")
-local verF = fs.open(".ver","r")
-local verA = verF.readAll()
-local ver = tonumber(verA)
-verF.close()
-
-local verF = fs.open("Panther/SystemCache/versionnum.syc","r")
-local verA = verF.readAll()
-local verC = tonumber(verA)
-verF.close()
-
-if ver > verC then
-	gitFile("update",".update")
-	shell.run(".update")
-end
-
-paintutils.drawLine(x/2-11,y/2,x/2+10,y/2,colors.gray)
-sleep(0.1)
---do thing
-paintutils.drawLine(x/2-11,y/2,x/2+10,y/2,colors.lightBlue)
-sleep(0.1)
 shell.run("Panther/System/Logon.sys")

@@ -7,6 +7,7 @@ local function main()
 	local currentPx = 0
 	local currentPy = 0
 	local desktopIcons = {}
+	local rClickX, rClickY, rClick
 
 	local function drawButton(x,y,padding,height,text)
 		term.setCursorPos(x,y)
@@ -53,7 +54,7 @@ local function main()
 		currentPx = currentPx + 9
 	end
 
-	if not fs.exists("Panther/SystemCache/UserLogonInfo.inf") then
+	if not fs.exists("Panther/SystemData/UserLogonInfo.inf") then
 		error("Please login from the logon screen.")
 	end
 
@@ -64,6 +65,8 @@ local function main()
 		term.clear()
 		drawSidebar()
 		programsFound = 0
+		local image = paintutils.loadImage("Panther/System/Images/Backgrounds/Background.img")
+		paintutils.drawImage(image,8,1)
 		local programs = fs.list("Panther/InstalledPrograms/")
 		for i, name in pairs(programs) do
 			programsFound = i
@@ -75,6 +78,21 @@ local function main()
 			term.setTextColor(colors.gray)
 			write("No programs have been installed.")
 		end
+	end
+	
+	local function rightClickMenu(x,y)
+		rClickX = x
+		rClickY = y
+		term.setBackgroundColor(colors.white)
+		term.setTextColor(colors.gray)
+		term.setCursorPos(x,y)
+		term.write("                 ")
+		term.setCursorPos(x,y+1)
+		term.write(" Edit Background ")
+		term.setCursorPos(x,y+2)
+		term.write(" Refresh         ")
+		term.setCursorPos(x,y+3)
+		term.write("                 ")
 	end
 
 	local doRedraw = true
@@ -98,6 +116,16 @@ local function main()
 					doRedraw = true
 					shell.run("Panther/System/Programs.sys")
 				end
+				if rClickX ~= nil then
+					if e[3] >= rClickX and e[3] <= rClickX+string.len(" Edit Background ") and e[4] == rClickY+1 and rClick == true then
+						shell.run("paint Panther/System/Images/Backgrounds/Background.img")
+					elseif e[3] >= rClickX and e[3] <= rClickX+string.len(" Edit Background ") and e[4] == rClickY+2 and rClick == true then
+						shell.run("Panther/System/Desktop.sys")
+					elseif rClick == true then
+						doRedraw = true
+						rClick = false
+					end
+				end
 
 				if desktopIcons[1] then
 					if e[3] >= desktopIcons[1] and e[3] <= desktopIcons[1]+8 and e[4] >= desktopIcons[2] and e[4] <= desktopIcons[2]+6 then
@@ -117,26 +145,20 @@ local function main()
 						shell.run("Panther/InstalledPrograms/"..desktopIcons[9])
 					end
 				end
-				if desktopIcons[10] then
-					if e[3] >= desktopIcons[11] and e[3] <= desktopIcons[11]+8 and e[4] >= desktopIcons[12] and e[4] <= desktopIcons[12]+6 then
-						doRedraw = true
-						shell.run("Panther/InstalledPrograms/"..desktopIcons[13])
-					end
-				end
-				if desktopIcons[14] then
-					if e[3] >= desktopIcons[14] and e[3] <= desktopIcons[14]+8 and e[4] >= desktopIcons[15] and e[4] <= desktopIcons[15]+6 then
-						doRedraw = true
-						shell.run("Panther/InstalledPrograms/"..desktopIcons[16])
-					end
-				end
+			elseif e[2] == 2 and e[4] <=ys-4 then
+				draw()
+				rightClickMenu(e[3],e[4])
+				drawSidebar()
+				rClick = true
 			end
 		elseif e[1] == "key" then
 			if e[2] == keys.r then
-				doRedraw = true
+				shell.run("Panther/System/Desktop.sys")
 			end
 		elseif e[1] == "term_resize" then
 			xs, ys = term.getSize()
 			doRedraw = true
+			
 		end
 	end
 	

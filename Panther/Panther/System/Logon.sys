@@ -65,8 +65,8 @@ function encrypt(input, key)
 end
 
 
-if fs.exists("Panther/SystemCache/version.syc") then
-	local ver = fs.open("Panther/SystemCache/version.syc","r")
+if fs.exists("Panther/SystemData/version.syc") then
+	local ver = fs.open("Panther/SystemData/version.syc","r")
 	version = ver.readLine()
 	ver.close()
 end
@@ -121,7 +121,7 @@ while true do
 					paintutils.drawLine(xs/2-11,ys/2,xs/2+11,ys/2,colors.white)
 					term.setTextColor(colors.gray)
 					CenterText("Welcome!",ys/2)
-					local userLogonInfo = fs.open("Panther/SystemCache/UserLogonInfo.inf","a")
+					local userLogonInfo = fs.open("Panther/SystemData/UserLogonInfo.inf","a")
 					userLogonInfo.close()
 					passF.close()
 					sleep(1)
@@ -146,7 +146,7 @@ while true do
 			CenterText("Welcome!",ys/2)
 			sleep(1)
 			playSound("logon")
-			local userLogonInfo = fs.open("Panther/SystemCache/UserLogonInfo.inf","a")
+			local userLogonInfo = fs.open("Panther/SystemData/UserLogonInfo.inf","a")
 			userLogonInfo.close()
 			passF.close()
 			shell.run("Panther/System/Desktop.sys")

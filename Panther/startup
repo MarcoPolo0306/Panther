@@ -52,7 +52,6 @@ if term.isColor() then
 		logprint("No monitor found.")
 	end
 	logprint("Ready for boot.")
-	sleep(0.2)
 	shell.run("Panther/System/Boot.sys")
 else
 	logprint("Panther failed to boot!")

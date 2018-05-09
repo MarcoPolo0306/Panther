@@ -25,8 +25,8 @@ function drawSidebar()
 	drawButton(2,8,2,3,"Programs ")
 	drawButton(2,y-3,2,3," Reboot  ")
 	drawButton(2,y-7,2,3,"Shutdown ")
-	term.setBackgroundColor(colors.red)
-	drawButton(13,2,0,0,"X",colors.white,colors.red)
+	term.setTextColor(colors.red)
+	drawButton(13,2,0,0,"\7",colors.red,colors.white)
 	drawButton(6,2,2,0,"Home")
 	return 1
 end

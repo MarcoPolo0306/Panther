@@ -3,17 +3,65 @@ os.loadAPI("Panther/System/API/Menu")
 local x, y = term.getSize()
 local menu = 0
 local data = {}
-local chosenColorF = fs.open( "Panther/UserData/color.urd", "r" )
-for line in chosenColorF.readLine do
-  data[ #data + 1 ] = line
+local version
+local playStartupAni
+local chosenColor
+local autoUpdate
+
+
+local function reloadConfig()
+	local playStartupAniF = fs.open("Panther/UserData/startupani.urd","r")
+	local playStartupAniA = playStartupAniF.readAll()
+	if playStartupAniA == "true" then
+		playStartupAni = true
+	else
+		playStartupAni = false
+	end
+	playStartupAniF.close()
+	local autoUpdateF = fs.open("Panther/UserData/autoupdate.urd","r")
+	local autoUpdateA = playStartupAniF.readAll()
+	if autoUpdateA == "true" then
+		autoUpdate = true
+	else
+		autoUpdate = false
+	end
+	autoUpdateF.close()
 end
-chosenColorF.close()
+
+if fs.exists("Panther/SystemData/version.syc") then
+	local ver = fs.open("Panther/SystemData/version.syc","r")
+	version = ver.readLine()
+	ver.close()
+end
+
+
 
 local scaleF = fs.open("Panther/UserData/monscale.urd","r") 
 scale = scaleF.readAll()
 scaleF.close()
 local selection = 1
 local egg = 0
+
+local function drawToggle(text,y,toggled)
+	paintutils.drawPixel(2,y,colors.lightGray)
+	paintutils.drawPixel(3,y,colors.lightGray)
+	paintutils.drawPixel(4,y,colors.gray)
+	if toggled == true then
+		paintutils.drawPixel(2,y,colors.blue)
+		paintutils.drawPixel(3,y,colors.lightBlue)
+		paintutils.drawPixel(4,y,colors.lightBlue)
+	end
+	term.setCursorPos(6,y)
+	term.setBackgroundColor(colors.white)
+	term.setTextColor(colors.gray)
+	write(text)
+end
+
+local function CenterText(text,y)
+	local x,ny = term.getSize()
+	term.setCursorPos(x/2-string.len(text)/2,y)
+	write(text)
+end
 
 function drawTopbar()
 	term.setBackgroundColor(colors.gray)
@@ -35,6 +83,10 @@ local function drawToolbar()
 	term.setBackgroundColor(colors.lightGray)
 	term.setTextColor(colors.gray)
 	write(" Security ")
+	term.setCursorPos(string.len(" Personalization " )+string.len(" Security ")+6,1)
+	term.setBackgroundColor(colors.lightGray)
+	term.setTextColor(colors.gray)
+	write(" About ")
 end
 
 local function huehue()
@@ -69,10 +121,11 @@ local function personalizationTab()
 	local last = 2
 	local function drawColor(color,x)
 		term.setCursorPos(last,5)
-		term.setBackgroundColor(color)
-		term.setTextColor(colors.lightGray)
+		term.setBackgroundColor(colors.white)
+		term.setTextColor(color)
 		if color == colors.white then
-			print("\127")
+		term.setBackgroundColor(colors.lightGray)
+			print("\7")
 		--[[elseif data[1] == color then
 			if color ~= colors.lime then
 				term.setTextColor(colors.lime)
@@ -81,7 +134,7 @@ local function personalizationTab()
 			end
 			print("_")]]--
 		else
-			print(" ")
+			print("\7")
 		end
 		last = last + 2
 		
@@ -108,7 +161,9 @@ local function personalizationTab()
 	term.setTextColor(colors.lightGray)
 	term.setBackgroundColor(colors.gray)
 	print(" "..scale.." (Click to change) ")
-	
+	drawToggle("Startup Animation",12,playStartupAni)
+	sleep()
+	drawToggle("Auto Update",14,autoUpdate)
 end
 
 local function security()
@@ -140,9 +195,50 @@ local function changeColor(color)
 	personalizationTab()
 end
 
+local function credits()
+	clear()
+	selection = 4
+	term.setCursorPos(2,3)
+	term.setBackgroundColor(colors.white)
+	term.setTextColor(colors.gray)
+	CenterText("Credits",9)
+	local image = paintutils.loadImage("Panther/System/Images/StartupLogo/LogoAnimation3.img")
+	paintutils.drawImage(image,x/2-35/2,3)
+	term.setCursorPos(2,3)
+	term.setBackgroundColor(colors.white)
+	term.setTextColor(colors.gray)
+	CenterText("NDFJay - Buttons",11)
+	CenterText("BigSHinyToys - File Explorer Base",12)
+	CenterText("LDDestroier (Fixed typos in OS boot, ",13)
+	CenterText(" log print function, desktop not needing",14)
+	CenterText(" to redraw if an update was not made) ",15)
+	CenterText(" All of the editors of the ComputerCraft Wiki ",16)
+	CenterText(" You! ",17)
+	CenterText("\17 Back",19)
+end
+
+local function aboutTab()
+	clear()
+	selection = 3
+	term.setCursorPos(2,3)
+	term.setBackgroundColor(colors.white)
+	term.setTextColor(colors.gray)
+	CenterText("About",3)
+	local image = paintutils.loadImage("Panther/System/Images/StartupLogo/LogoAnimation3.img")
+	paintutils.drawImage(image,x/2-35/2,5)
+	term.setCursorPos(2,3)
+	term.setBackgroundColor(colors.white)
+	term.setTextColor(colors.gray)
+	CenterText("Version "..version,11)
+	CenterText("Programmed by MarcoPolo0306",13)
+	CenterText("Github rep: https://bit.ly/2I2QHdD",15)
+	CenterText("Open credits \16",17)
+end
+
 local function drawProgram()
 	term.setBackgroundColor(colors.white)
 	term.clear()
+	reloadConfig()
 	
 	drawTopbar()
 	drawToolbar()
@@ -184,6 +280,8 @@ while true do
 					personalizationTab()
 				elseif e[3] >=22 and e[3] <= string.len( "Security" )+23 and e[4] == 1 then
 					security()
+				elseif e[3] >=32 and e[3] <= 39 and e[4] == 1 then
+					aboutTab()
 				elseif selection == 1 then		
 					if e[3] == 2 and e[4] == 5 then
 						changeColor(1)
@@ -259,6 +357,32 @@ while true do
 								print("You must enter a number between 0.5 and 5")
 							end
 						end
+					elseif e[3] >= 2 and e[3] <= 4 and e[4] == 12 then
+						
+						if playStartupAni == true then
+							local playStartupAniF = fs.open("Panther/UserData/startupani.urd","w")
+							playStartupAniF.write("false")
+							playStartupAniF.close()
+						else
+							local playStartupAniF = fs.open("Panther/UserData/startupani.urd","w")
+							playStartupAniF.write("true")
+							playStartupAniF.close()
+						end
+						reloadConfig()
+						personalizationTab()
+					elseif e[3] >= 2 and e[3] <= 4 and e[4] == 14 then
+						
+						if autoUpdate == true then
+							local autoUpdateF = fs.open("Panther/UserData/autoupdate.urd","w")
+							autoUpdateF.write("false")
+							autoUpdateF.close()
+						else
+							local autoUpdateF = fs.open("Panther/UserData/autoupdate.urd","w")
+							autoUpdateF.write("true")
+							autoUpdateF.close()
+						end
+						reloadConfig()
+						personalizationTab()
 					end
 				elseif selection == 2 then
 					if e[3] >= 2 and e[3] <= string.len(" Click to change password ")+2 and e[4] == 4 then
@@ -327,6 +451,14 @@ while true do
 						print(" Password Saved           ")
 						sleep(1)
 						security()
+					end
+				elseif selection == 3 then
+					if e[3] >= x/2-string.len("Open Credits ?")/2 and e[3] <= x/2+string.len("Open Credits ?")/2 and e[4] == 17 then
+						credits()
+					end
+				elseif selection == 4 then
+					if e[3] >= x/2-string.len("? Back")/2 and e[3] <= x/2+string.len("? Back")/2 and e[4] == 19 then
+						aboutTab()
 					end
 				end
 			end
