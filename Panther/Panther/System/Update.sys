@@ -36,7 +36,7 @@ if autoUpdate == true then
 	CenterText("Checking for updates",(y/2)+2)
 	paintutils.drawLine(x/2-11,y/2,x/2+10,y/2,colors.gray)
 	sleep(0.1)
-	gitFile("Panther/Panther/SystemCache/versionnum.syc",".ver")
+	gitFile("Panther/Panther/SystemData/versionnum.syc",".ver")
 	local verF = fs.open(".ver","r")
 	local verA = verF.readAll()
 	local ver = tonumber(verA)
